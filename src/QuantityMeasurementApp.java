@@ -53,26 +53,31 @@ public class QuantityMeasurementApp {
             return new Quantity(converted, targetUnit);
         }
 
-        public static double convert(double value, LengthUnit source, LengthUnit target) {
-            if (!Double.isFinite(value)) throw new IllegalArgumentException("Invalid value");
-            if (source == null || target == null) throw new IllegalArgumentException("Unit cannot be null");
-
-            double base = source.toFeet(value);
-            return target.fromFeet(base);
-        }
-
+        // ✅ UC6: add → result in first operand unit
         public Quantity add(Quantity other) {
             if (other == null) throw new IllegalArgumentException("Other quantity cannot be null");
 
-            double sumInFeet = this.toBaseUnit() + other.toBaseUnit();
-            double result = this.unit.fromFeet(sumInFeet);
+            double sumFeet = this.toBaseUnit() + other.toBaseUnit();
+            double result = this.unit.fromFeet(sumFeet);
 
             return new Quantity(result, this.unit);
         }
 
-        public static Quantity add(Quantity q1, Quantity q2) {
+        // ✅ UC7: add with target unit
+        public Quantity add(Quantity other, LengthUnit targetUnit) {
+            if (other == null) throw new IllegalArgumentException("Other quantity cannot be null");
+            if (targetUnit == null) throw new IllegalArgumentException("Target unit cannot be null");
+
+            double sumFeet = this.toBaseUnit() + other.toBaseUnit();
+            double result = targetUnit.fromFeet(sumFeet);
+
+            return new Quantity(result, targetUnit);
+        }
+
+        // static version (optional)
+        public static Quantity add(Quantity q1, Quantity q2, LengthUnit targetUnit) {
             if (q1 == null || q2 == null) throw new IllegalArgumentException("Null operand");
-            return q1.add(q2);
+            return q1.add(q2, targetUnit);
         }
 
         @Override
